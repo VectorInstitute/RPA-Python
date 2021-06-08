@@ -10,6 +10,8 @@ import sys
 import time
 import platform
 
+path_clone_repo = '/Desktop/vector/'
+
 # required for python 2 usage of io.open
 if sys.version_info[0] < 3: import io
 
@@ -152,7 +154,7 @@ def _tagui_output():
         tagui_output_file.close()
         os.remove(init_directory_output_file)
 
-    return tagui_output_text
+    return tagui_output_text.strip()
 
 def _esq(input_text = ''):
     """function for selective escape of single quote ' for tagui"""
@@ -176,7 +178,7 @@ def _chrome():
 def _python_flow():
     """function to create entry tagui flow without visual automation"""
     flow_text = '// NORMAL ENTRY FLOW FOR RPA FOR PYTHON ~ TEBEL.ORG\r\n\r\nlive'
-    flow_file = _py23_open('rpa_python', 'w')
+    flow_file = _py23_open('rpa_python.tag', 'w')
     flow_file.write(_py23_write(flow_text))
     flow_file.close()
 
@@ -184,7 +186,7 @@ def _visual_flow():
     """function to create entry tagui flow with visual automation"""
     flow_text = '// VISUAL ENTRY FLOW FOR RPA FOR PYTHON ~ TEBEL.ORG\r\n' + \
                 '// mouse_xy() - dummy trigger for SikuliX integration\r\n\r\nlive'
-    flow_file = _py23_open('rpa_python', 'w')
+    flow_file = _py23_open('rpa_python.tag', 'w')
     flow_file.write(_py23_write(flow_text))
     flow_file.close()
 
@@ -445,16 +447,21 @@ def init(visual_automation = False, chrome_browser = True, headless_mode = False
     if platform.system() == 'Windows':
         tagui_directory = tagui_location() + '/' + 'tagui'
     else:
-        tagui_directory = tagui_location() + '/' + '.tagui'
+        tagui_directory = tagui_location() + path_clone_repo + 'TagUI'
 
     tagui_executable = tagui_directory + '/' + 'src' + '/' + 'tagui'
     end_processes_executable = tagui_directory + '/' + 'src' + '/' + 'end_processes'
 
     # if tagui executable is not found, initiate setup() to install tagui
     if not os.path.isfile(tagui_executable):
-        if not setup():
-            # error message is shown by setup(), no need for message here
-            return False
+        tagui_directory = tagui_location() + '/' + '.tagui'
+        tagui_executable = tagui_directory + '/' + 'src' + '/' + 'tagui'
+        end_processes_executable = tagui_directory + '/' + 'src' + '/' + 'end_processes'
+
+        if not os.path.isfile(tagui_executable):
+            if not setup():
+                # error message is shown by setup(), no need for message here
+                return False
 
     # sync tagui delta files for current release if needed
     if not _tagui_delta(tagui_directory): return False
@@ -506,12 +513,11 @@ def init(visual_automation = False, chrome_browser = True, headless_mode = False
         browser_option = 'headless'
     
     # entry shell command to invoke tagui process
-    tagui_cmd = tagui_executable + ' rpa_python ' + browser_option
+    tagui_cmd = tagui_executable + ' rpa_python.tag ' + browser_option
 
     # run tagui end processes script to flush dead processes
     # for eg execution ended with ctrl+c or forget to close()
     os.system('"' + end_processes_executable + '"')
-
     try:
         # launch tagui using subprocess
         _process = subprocess.Popen(
@@ -523,7 +529,6 @@ def init(visual_automation = False, chrome_browser = True, headless_mode = False
 
         # loop until tagui live mode is ready or tagui process has ended
         while True:
-
             # failsafe exit if tagui process gets killed for whatever reason
             if _process.poll() is not None:
                 print('[RPA][ERROR] - following happens when starting TagUI...')
@@ -540,6 +545,7 @@ def init(visual_automation = False, chrome_browser = True, headless_mode = False
 
             # check that tagui live mode is ready then start listening for inputs
             if 'LIVE MODE - type done to quit' in tagui_out:
+
                 # dummy + start line to clear live mode backspace char before listening
                 _tagui_write('echo "[RPA][STARTED]"\n')
                 _tagui_write('echo "[RPA][' + str(_tagui_id) + '] - listening for inputs"\n')
@@ -742,7 +748,7 @@ def _ready():
             sys.stdout.write(tagui_out); sys.stdout.flush()
 
         # check if tagui live mode is listening for inputs and return result
-        if tagui_out.strip().startswith('[RPA][') and tagui_out.strip().endswith('] - listening for inputs'):
+        if tagui_out.strip().startswith('"[RPA][') and tagui_out.strip().endswith('] - listening for inputs"'):
             return True
         else:
             return False
@@ -753,7 +759,6 @@ def _ready():
 
 def send(tagui_instruction = None):
     """send next live mode instruction to tagui for processing if tagui is ready"""
-
     global _process, _tagui_started, _tagui_id, _tagui_visual, _tagui_chrome
 
     if not _tagui_started:
@@ -761,7 +766,6 @@ def send(tagui_instruction = None):
         return False
 
     if tagui_instruction is None or tagui_instruction == '': return True
-
     try:
         # failsafe exit if tagui process gets killed for whatever reason
         if _process.poll() is not None:
@@ -791,7 +795,6 @@ def send(tagui_instruction = None):
 
         # echo live mode instruction, after preparing string to be echo-safe
         _tagui_write('echo "[RPA][' + str(_tagui_id) + '] - ' + echo_safe_instruction + '"\n')
-
         # send live mode instruction to be executed
         _tagui_write(tagui_instruction + '\n')
 
@@ -818,7 +821,6 @@ def close():
     """disconnect from tagui process by sending 'done' trigger instruction"""
 
     global _process, _tagui_started, _tagui_id, _tagui_visual, _tagui_chrome, _tagui_init_directory
-
     if not _tagui_started:
         print('[RPA][ERROR] - use init() before using close()')
         return False
@@ -840,20 +842,20 @@ def close():
         while _process.poll() is None: pass
 
         # remove again generated tagui flow, js code and custom functions files
-        if os.path.isfile('rpa_python'): os.remove('rpa_python')
-        if os.path.isfile('rpa_python.js'): os.remove('rpa_python.js')
-        if os.path.isfile('rpa_python.raw'): os.remove('rpa_python.raw')
-        if os.path.isfile('tagui_local.js'): os.remove('tagui_local.js')
+        if os.path.isfile('rpa_python.tag'): os.remove('rpa_python.tag')
+        if os.path.isfile('rpa_python.tag.js'): os.remove('rpa_python.tag.js')
+        if os.path.isfile('rpa_python.tag.raw'): os.remove('rpa_python.tag.raw')
+        if os.path.isfile('tagui_local.tag.js'): os.remove('tagui_local.tag.js')
 
         # to handle user changing current directory after init() is called
-        if os.path.isfile(os.path.join(_tagui_init_directory, 'rpa_python')):
-            os.remove(os.path.join(_tagui_init_directory, 'rpa_python'))
-        if os.path.isfile(os.path.join(_tagui_init_directory, 'rpa_python.js')):
-            os.remove(os.path.join(_tagui_init_directory, 'rpa_python.js'))
-        if os.path.isfile(os.path.join(_tagui_init_directory, 'rpa_python.raw')):
-            os.remove(os.path.join(_tagui_init_directory, 'rpa_python.raw'))
-        if os.path.isfile(os.path.join(_tagui_init_directory, 'tagui_local.js')):
-            os.remove(os.path.join(_tagui_init_directory, 'tagui_local.js'))   
+        if os.path.isfile(os.path.join(_tagui_init_directory, 'rpa_python.tag')):
+            os.remove(os.path.join(_tagui_init_directory, 'rpa_python.tag'))
+        if os.path.isfile(os.path.join(_tagui_init_directory, 'rpa_python.tag.js')):
+            os.remove(os.path.join(_tagui_init_directory, 'rpa_python.tag.js'))
+        if os.path.isfile(os.path.join(_tagui_init_directory, 'rpa_python.tag.raw')):
+            os.remove(os.path.join(_tagui_init_directory, 'rpa_python.tag.raw'))
+        if os.path.isfile(os.path.join(_tagui_init_directory, 'tagui_local.tag.js')):
+            os.remove(os.path.join(_tagui_init_directory, 'tagui_local.tag.js'))   
 
         # remove generated tagui log and data files if not in debug mode
         if not debug():
@@ -1026,6 +1028,12 @@ def hover(element_identifier = None, test_coordinate = None):
     elif not send('hover ' + _sdq(element_identifier)):
         return False
 
+    else:
+        return True
+
+def fill_input(child_text, value):
+    if not send('fill_input - ' + child_text + ' - ' + value):
+        return False
     else:
         return True
 

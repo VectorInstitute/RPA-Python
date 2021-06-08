@@ -6,6 +6,9 @@
 /rpa_package/MANIFEST
 /rpa_package/rpa.egg-info
 
+# ignore virtual environment directory
+venv*
+
 # exclude pycache directory
 /__pycache__
 /rpa_package/__pycache__
