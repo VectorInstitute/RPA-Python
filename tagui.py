@@ -9,6 +9,7 @@ import os
 import sys
 import time
 import platform
+import json
 
 path_clone_repo = '/Desktop/vector/'
 
@@ -1031,8 +1032,8 @@ def hover(element_identifier = None, test_coordinate = None):
     else:
         return True
 
-def fill_input(child_text, value):
-    if not send('fill_input - ' + child_text + ' - ' + value):
+def fill_input(child_text, values):
+    if not send('fill_input - ' + child_text + ' - ' + json.dumps(values)):
         return False
     else:
         return True
