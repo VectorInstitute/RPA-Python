@@ -8,63 +8,71 @@ import rpa as r
 
 # use init() to start TagUI, it auto downloads TagUI on first run
 # default init(visual_automation = False, chrome_browser = True)
-r.init()
+r.init(visual_automation=True)
 
-# use url('your_url') to go to web page, url() returns current URL
-r.url('https://ca.yahoo.com')
+r.url('http://foersom.com/net/HowTo/data/OoPdfFormExample.pdf')
+r.wait(5.0)
+r.snap(800, 700, 900, 710, 'results.png')
+# r.click(850, 705)
+r.type(890, 705, 'Shayan')
+r.snap('page', 'results2.png')
 
-# use type() to enter text into an UI element or x, y location
-# '[enter]' = enter key, '[clear]' = clear field
-r.type('search-input', 'github')
+# r.type('/home/shayan/Pictures/ScreenShoots/2021-06-15_11:31:04.png', 'Shayan')
+# # use url('your_url') to go to web page, url() returns current URL
+# r.url('https://ca.yahoo.com')
 
-# use read() to fetch and return text from UI element
-search_text = r.read('search-input')
-print(search_text)
+# # use type() to enter text into an UI element or x, y location
+# # '[enter]' = enter key, '[clear]' = clear field
+# r.type('search-input', 'github')
 
-# use click() to click on an UI element or x, y location
-# rclick() = right-click, dclick() = double-click
-r.click('search-button')
+# # use read() to fetch and return text from UI element
+# search_text = r.read('search-input')
+# print(search_text)
 
-# use wait() to wait for a number of seconds
-# default wait() is 5 seconds
-r.wait(6.6)
+# # use click() to click on an UI element or x, y location
+# # rclick() = right-click, dclick() = double-click
+# r.click('search-button')
 
-# use snap() to save screenshot of page or UI element
-# page = web page, page.png = computer screen
-r.snap('page', 'results.png')
-r.snap('logo', 'logo.png')
+# # use wait() to wait for a number of seconds
+# # default wait() is 5 seconds
+# r.wait(6.6)
 
-# another example of interacting with a web page
-# include http:// or https:// in URL parameter
-r.url('https://duckduckgo.com')
-r.type('search_form_input_homepage', 'The search engine that doesn\'t track you.')
-r.snap('page', 'duckduckgo.png')
-r.wait(4.4)
+# # use snap() to save screenshot of page or UI element
+# # page = web page, page.png = computer screen
+# r.snap('page', 'results.png')
+# r.snap('logo', 'logo.png')
 
-# use close() to close TagUI process and web browser
-# if you forget to close, just close() next time
-r.close()
+# # another example of interacting with a web page
+# # include http:// or https:// in URL parameter
+# r.url('https://duckduckgo.com')
+# r.type('search_form_input_homepage', 'The search engine that doesn\'t track you.')
+# r.snap('page', 'duckduckgo.png')
+# r.wait(4.4)
 
-# in above web automation example, web element identifier can be XPath selector, CSS selector or
-# attributes id, name, class, title, aria-label, text(), href, in decreasing order of priority
-# if you don't mind using ugly and less robust XPath, it can be copied from Chrome inspector
-# otherwise recommend googling on writing XPath manually, or simply make use of attributes
+# # use close() to close TagUI process and web browser
+# # if you forget to close, just close() next time
+# r.close()
 
-# also supports visual element identifier using .png or .bmp image snapshot
-# representing the UI element (can be on desktop applications or web browser)
-# for eg r.click('start_menu.png'), r.type('username_box.png', 'Sonic')
+# # in above web automation example, web element identifier can be XPath selector, CSS selector or
+# # attributes id, name, class, title, aria-label, text(), href, in decreasing order of priority
+# # if you don't mind using ugly and less robust XPath, it can be copied from Chrome inspector
+# # otherwise recommend googling on writing XPath manually, or simply make use of attributes
 
-# if the image file specified does not exist, OCR will be used to search for
-# that text on the screen to interact with the UI element containing that text
-# for eg r.click('Submit Form.png') clicks on a button with text 'Submit Form'
-# this trick also works for hover(), type(), select(), read(), snap() functions
+# # also supports visual element identifier using .png or .bmp image snapshot
+# # representing the UI element (can be on desktop applications or web browser)
+# # for eg r.click('start_menu.png'), r.type('username_box.png', 'Sonic')
 
-# visual element identifiers can also be x, y coordinates of elements on the screen
-# for eg r.click(600, 300), r.type(600, 300, 'Mario'), r.select(600, 300, 600, 400)
-# another eg is boundary of area of interest x1, y1, x2, y2 for read() and snap()
-# for eg r.read(200, 200, 600, 400), r.snap(200, 200, 600, 400, 'results.png')
+# # if the image file specified does not exist, OCR will be used to search for
+# # that text on the screen to interact with the UI element containing that text
+# # for eg r.click('Submit Form.png') clicks on a button with text 'Submit Form'
+# # this trick also works for hover(), type(), select(), read(), snap() functions
 
-# image transparency (0% opacity) is supported, ie images with empty sections
-# eg r.read('image_preview_frame.png'), r.snap('application_window_frame.png')
-# or an element with transparent background to work with varying backgrounds
-# r.click('icon_transparent_background.png'), r.click('button_no_bkgnd.png')
+# # visual element identifiers can also be x, y coordinates of elements on the screen
+# # for eg r.click(600, 300), r.type(600, 300, 'Mario'), r.select(600, 300, 600, 400)
+# # another eg is boundary of area of interest x1, y1, x2, y2 for read() and snap()
+# # for eg r.read(200, 200, 600, 400), r.snap(200, 200, 600, 400, 'results.png')
+
+# # image transparency (0% opacity) is supported, ie images with empty sections
+# # eg r.read('image_preview_frame.png'), r.snap('application_window_frame.png')
+# # or an element with transparent background to work with varying backgrounds
+# # r.click('icon_transparent_background.png'), r.click('button_no_bkgnd.png')
