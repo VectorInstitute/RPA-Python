@@ -169,19 +169,24 @@ def train():
 
     model.train()
 
-    transform = [ToTensorV2()]
-    transform = T.ComposeFUNSDTransform(transform, img_size=opt.img_size)
-    dset = datasets.FUNSD(opt.data_dir,
-                          split=opt.data_split,
-                          transforms=transform,
-                          load_qa_only=True,
-                          load_linked_only=True,
-                          linking_limit=1)
+    # Get dataloader
+    dataloader = torch.utils.data.DataLoader(
+        ListDataset(train_path), batch_size=opt.batch_size, shuffle=False, num_workers=opt.n_cpu
+    )
 
-    dataloader = DataLoader(dset,
-                            num_workers=opt.n_cpu,
-                            batch_size=opt.batch_size,
-                            shuffle=False)
+    # transform = [ToTensorV2()]
+    # transform = T.ComposeFUNSDTransform(transform, img_size=opt.img_size)
+    # dset = datasets.FUNSD(opt.data_dir,
+    #                       split=opt.data_split,
+    #                       transforms=transform,
+    #                       load_qa_only=True,
+    #                       load_linked_only=True,
+    #                       linking_limit=1)
+
+    # dataloader = DataLoader(dset,
+    #                         num_workers=opt.n_cpu,
+    #                         batch_size=opt.batch_size,
+    #                         shuffle=False)
 
     Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 
@@ -189,7 +194,9 @@ def train():
 
         epoch_loss_list = []
 
-        for batch_i, (imgs, targets) in enumerate(dataloader):
+        # for batch_i, (imgs, targets) in enumerate(dataloader):
+        for batch_i, (_, imgs, targets) in enumerate(dataloader):
+            print(targets.shape)
             imgs = Variable(imgs.type(Tensor))
             targets = Variable(targets.type(Tensor), requires_grad=False)
             optimizer.zero_grad()
