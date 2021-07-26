@@ -194,8 +194,8 @@ def train():
 
         epoch_loss_list = []
 
-        # for batch_i, (imgs, targets) in enumerate(dataloader):
         for batch_i, (_, imgs, targets) in enumerate(dataloader):
+        # for batch_i, (imgs, targets) in enumerate(dataloader):
             print(targets.shape)
             imgs = Variable(imgs.type(Tensor))
             targets = Variable(targets.type(Tensor), requires_grad=False)
@@ -229,20 +229,10 @@ def train():
             epoch_loss_list.append(loss.item())
 
         if cur_epoch % opt.checkpoint_interval == 0:
-            img_path = 'object_detector/images/82092117.png'
-            img = Image.open(img_path)
-            img = np.array(img)
-            if len(img.shape) != 3:
-                img = img[:, :, np.newaxis]
-                img = np.repeat(img, 3, axis=2)
-                img = Image.fromarray(img)
-            # model.save_weights("%s/%d.weights" % (opt.checkpoint_dir, epoch))
-            detections = detect_image(img, opt.img_size, model)
-            plot_box(
-                img, opt.img_size, detections, (1, 0, 0),
-                img_path.replace(".jpg", "_{}.jpg".format(cur_epoch)).replace(
-                    ".png", "_{}.png".format(cur_epoch)), "locations")
-
+            # predict('object_detector/images/82092117.png', model, cur_epoch)
+            # predict('object_detector/images/BloodImage_00001_jpg.rf.3f768de1133398b7558743883a808be7.jpg', model, cur_epoch)
+            predict('object_detector/images/results2.jpg', model, cur_epoch)
+           
         epoch_loss = 0 if len(epoch_loss_list) == 0 else sum(
             epoch_loss_list) / len(epoch_loss_list)
         print("Loss over epoch {} is {}".format(cur_epoch, epoch_loss))
@@ -252,8 +242,24 @@ def train():
 
         cur_epoch.add_(1)
 
+def predict(img_path, model, epoch):
+    img = Image.open(img_path)
+    img = np.array(img)
+    if len(img.shape) != 3:
+        img = img[:, :, np.newaxis]
+        img = np.repeat(img, 3, axis=2)
+        img = Image.fromarray(img)
+    else:
+        img = Image.fromarray(img)
 
+    detections = detect_image(img, opt.img_size, model)
+    plot_box(
+        img, opt.img_size, detections, (1, 0, 0),
+        img_path.replace(".jpg", "_{}.jpg".format(epoch)).replace(
+            ".png", "_{}.png".format(epoch)), "locations")
+    
 def detect_image(img, img_size, model):
+
     # scale and pad image
     conf_thres = 0.8
     nms_thres = 0.4
@@ -285,14 +291,15 @@ def detect_image(img, img_size, model):
 
 def test_hardcoded_boxes():
     img_size = opt.img_size
-    img_path = "images/82092117.png"  # form
+    # img_path = "object_detector/images/82092117.png"  # form
+    img_path = "object_detector/images/results2.jpg" # test_form
     # img_path = 'images/000012.jpg' # car
     prev_time = time.time()
     img = Image.open(img_path)
 
     # detections = torch.tensor([[116, 352, 27, 15, 0.9, 0.9, 4]]) # form field 1
-    detections = torch.tensor([[188, 512, 171, 17, 0.9, 0.9,
-                                4]])  # form field 2
+    # detections = torch.tensor([[188, 512, 171, 17, 0.9, 0.9, 4]])  # form field 2
+    detections = torch.tensor([[0.419102*1916, 0.477005*935, 0.188935*1916, 0.044920*935, 0.9, 0.9, 4]]) # test_form
     # detections = torch.tensor([[253.5, 183.499999999983, 195.0, 173.00000000016, 0.9, 0.9, 4]]) # car
 
     cmap = plt.get_cmap('tab20b')
