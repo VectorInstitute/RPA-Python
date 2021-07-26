@@ -15,6 +15,7 @@ import cv2
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from PIL import Image
+from functools import partial
 
 import torch
 from torch.utils.data import DataLoader
@@ -174,8 +175,9 @@ def train():
         ListDataset(train_path), batch_size=opt.batch_size, shuffle=False, num_workers=opt.n_cpu
     )
 
-    # transform = [ToTensorV2()]
-    # transform = T.ComposeFUNSDTransform(transform, img_size=opt.img_size)
+    # transform_data = partial(T.transform_data, img_shape=(opt.img_size, opt.img_size))
+    # transform = [ToTensorV2()]    
+    # transform = T.ComposeFUNSDTransform(transform, post_process_fn=transform_data)
     # dset = datasets.FUNSD(opt.data_dir,
     #                       split=opt.data_split,
     #                       transforms=transform,
@@ -196,7 +198,6 @@ def train():
 
         for batch_i, (_, imgs, targets) in enumerate(dataloader):
         # for batch_i, (imgs, targets) in enumerate(dataloader):
-            print(targets.shape)
             imgs = Variable(imgs.type(Tensor))
             targets = Variable(targets.type(Tensor), requires_grad=False)
             optimizer.zero_grad()
