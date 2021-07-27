@@ -52,7 +52,7 @@ class ListDataset(Dataset):
             self.img_files = file.readlines()
         self.label_files = [path.replace('images', 'labels').replace('.jpg', '.txt') for path in self.img_files]
         self.img_shape = (img_size, img_size)
-        self.max_objects = 3
+        self.max_objects = 6
 
     def __getitem__(self, index):
 
@@ -114,9 +114,9 @@ class ListDataset(Dataset):
             labels[:, 3] *= w / padded_w
             labels[:, 4] *= h / padded_h
         # Fill matrix
-        filled_labels = np.zeros((self.max_objects, 5))
+        filled_labels = np.zeros((labels.shape[0], 5))
         if labels is not None:
-            filled_labels[range(len(labels))[:self.max_objects]] = labels[:self.max_objects]
+            filled_labels[range(len(labels))[:labels.shape[0]]] = labels[:labels.shape[0]]
         filled_labels = torch.from_numpy(filled_labels)
 
         return img_path, input_img, filled_labels
