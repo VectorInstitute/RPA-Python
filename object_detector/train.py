@@ -1,4 +1,5 @@
 #!/usr/bin/env python -W ignore::DeprecationWarning
+'this file is a modified version of the train file from https://github.com/cfotache/pytorch_custom_yolo_training'
 from __future__ import division
 
 from models import *

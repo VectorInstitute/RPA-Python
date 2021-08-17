@@ -1,3 +1,4 @@
+"This file is from https://github.com/cfotache/pytorch_custom_yolo_training"
 from __future__ import division
 
 import torch

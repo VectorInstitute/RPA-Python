@@ -1,4 +1,4 @@
-
+"This file is from https://github.com/cfotache/pytorch_custom_yolo_training"
 
 def parse_model_config(path):
     """Parses the yolo-v3 layer configuration file and returns module definitions"""

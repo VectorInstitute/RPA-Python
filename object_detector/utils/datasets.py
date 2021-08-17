@@ -1,3 +1,4 @@
+"This file is from https://github.com/cfotache/pytorch_custom_yolo_training"
 import glob
 import random
 import os
