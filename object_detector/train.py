@@ -89,7 +89,7 @@ parser.add_argument('--data_split', type=str, default="train")
 
 # use this to differentiate between the different runs, otherwise
 # every run will be saved in the same directory
-parser.add_argument('--run_name', type=str, required=True)
+parser.add_argument('--run_name', type=str, required=__name__ == '__main__')
 
 opt = parser.parse_args()
 
@@ -254,10 +254,10 @@ def predict(img_path, model, epoch):
         img = Image.fromarray(img)
 
     detections = detect_image(img, opt.img_size, model)
-    plot_box(
-        img, opt.img_size, detections, (1, 0, 0),
-        img_path.replace(".jpg", "_{}.jpg".format(epoch)).replace(
-            ".png", "_{}.png".format(epoch)), "locations")
+    return plot_box(
+                img, opt.img_size, detections, (1, 0, 0),
+                img_path.replace(".jpg", "_{}.jpg".format(epoch)).replace(
+                    ".png", "_{}.png".format(epoch)), "locations")
     
 def detect_image(img, img_size, model):
 
@@ -279,10 +279,9 @@ def detect_image(img, img_size, model):
         transforms.ToTensor(),
     ])
     # convert image to Tensor
-    # print(img.shape)
     image_tensor = img_transforms(img).float()
     image_tensor = image_tensor.unsqueeze_(0)
-    input_img = Variable(image_tensor.type(Tensor))
+    input_img = image_tensor
     # run inference on the model and get detections
     with torch.no_grad():
         detections = model(input_img)
@@ -316,13 +315,6 @@ def evaluation():
 
     # Load model and weights
     model = Darknet(opt.model_config_path, img_size=img_size)
-
-    ############################## NOTE ##########################
-
-    # instead of doing this:
-    # model.load_weights(opt.weights_path)
-
-    # do this instead
     model.load_state_dict(torch.load(opt.weights_path)["model"])
 
     model.cuda()
@@ -343,7 +335,6 @@ def evaluation():
     # Get bounding-box colors
     cmap = plt.get_cmap('tab20b')
     colors = [cmap(i) for i in np.linspace(0, 1, 20)]
-
     plot_box(img, img_size, detections, (1, 0, 0),
              img_path.replace(".jpg", "-det.jpg").replace(".png", "-det.png"),
              "width_height")
@@ -365,14 +356,13 @@ def plot_box(img,
     unpad_h = img_size - pad_y
     unpad_w = img_size - pad_x
 
+    all_bbox = []
     if detections is not None:
         unique_labels = detections[:, -1].cpu().unique()
         n_cls_preds = len(unique_labels)
-        # bbox_colors = random.sample(colors, n_cls_preds)
-        # browse detections and draw bounding boxes
         for x1, y1, x2, y2, conf, cls_conf, cls_pred in detections:
-            # print(x1, y1, x2, y2)
             if prediction_type == 'width_height':
+                all_bbox.append([x1, y1, x2, y2])
                 bbox = patches.Rectangle((x1, y1),
                                          x2,
                                          y2,
@@ -384,9 +374,7 @@ def plot_box(img,
                 box_w = ((x2 - x1) / unpad_w) * img.shape[1]
                 y1 = ((y1 - pad_y // 2) / unpad_h) * img.shape[0]
                 x1 = ((x1 - pad_x // 2) / unpad_w) * img.shape[1]
-                # print(x1, y1, x2, y2)
-                # color = bbox_colors[int(np.where(unique_labels == int(cls_pred))[0])]
-                # print(x1, y1, box_w, box_h)
+                all_bbox.append([x1, y1, box_w, box_h])
                 bbox = patches.Rectangle((x1, y1),
                                          box_w,
                                          box_h,
@@ -394,20 +382,9 @@ def plot_box(img,
                                          edgecolor=color,
                                          facecolor='none')
             ax.add_patch(bbox)
-            plt.text(x1,
-                     y1,
-                     s='.',
-                     color='white',
-                     verticalalignment='top',
-                     bbox={
-                         'color': color,
-                         'pad': 0
-                     })
     plt.axis('off')
-    # save image
-    plt.savefig(img_path, bbox_inches='tight', pad_inches=0.0)
-    plt.show()
-    # plt.cla()
+    plt.savefig(img_path, bbox_inches='tight', pad_inches=0.0,  dpi=300)
+    return all_bbox
 
 
 if __name__ == "__main__":

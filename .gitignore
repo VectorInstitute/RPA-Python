@@ -7,7 +7,7 @@
 /rpa_package/rpa.egg-info
 
 # exclude pycache directory
-/__pycache__
+*__pycache__*
 /rpa_package/__pycache__
 
 # exclude generated .pyc file
@@ -25,3 +25,7 @@
 
 # exclude custom js functions 
 /tagui_local.js
+
+# exclude image files
+*.jpg
+*.png
