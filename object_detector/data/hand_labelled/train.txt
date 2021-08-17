@@ -1,0 +1,1 @@
+/h/skousha/RPA_project/RPA-Python/object_detector/data/hand_labelled/images/pdf_test.jpg
