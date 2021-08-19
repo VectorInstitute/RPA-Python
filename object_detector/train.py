@@ -310,37 +310,6 @@ def test_hardcoded_boxes():
              img_path.replace(".jpg", "-det.jpg").replace(".png", "-det.png"),
              "width_height")
 
-
-def evaluation():
-    img_size = opt.img_size
-
-    # Load model and weights
-    model = Darknet(opt.model_config_path, img_size=img_size)
-    model.load_state_dict(torch.load(opt.weights_path)["model"])
-
-    model.cuda()
-    model.eval()
-
-    # load image and get detections
-    img_path = "images/82092117.png"  # form
-    # img_path = 'images/000012.jpg' # car
-    prev_time = time.time()
-    img = Image.open(img_path)
-    detections = detect_image(img, img_size, model)
-
-    # detections = torch.tensor([[0.5070, 0.5330, 0.3900, 0.3460, 0.9, 0.9, 3]])
-    # detections = torch.tensor([[10.3952, 23.7931,  1.0586,  1.0345, 0.9, 0.9, 4]])
-    inference_time = datetime.timedelta(seconds=time.time() - prev_time)
-    print('Inference Time: %s' % (inference_time))
-
-    # Get bounding-box colors
-    cmap = plt.get_cmap('tab20b')
-    colors = [cmap(i) for i in np.linspace(0, 1, 20)]
-    plot_box(img, img_size, detections, (1, 0, 0),
-             img_path.replace(".jpg", "-det.jpg").replace(".png", "-det.png"),
-             "width_height")
-
-
 def plot_box(img,
              img_size,
              detections,

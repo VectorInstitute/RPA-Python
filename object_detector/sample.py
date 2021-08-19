@@ -25,6 +25,9 @@ args = parser.parse_args()
 config = ('-l eng --oem 1 --psm 3')
 
 def get_values(field, data):
+    """
+    Cleans up the field title and extracts data
+    """
     if "Address" in field and '1' in field:
         field = field[1:]
     field = field.split('(')[0]
@@ -46,6 +49,12 @@ def get_values(field, data):
     return value, field
 
 def fill_out():
+    """
+    1. Loads the form
+    2. Takes a screenshot of the form
+    3. Passes the schreenshot to YOLO model to detect the bboxes
+    4. Fills out the form
+    """
     hard_coded_data = {
         "given_name": "Shayan",
         "family_name": "Kousha",
@@ -120,28 +129,6 @@ def fill_out():
 
     r.snap('page', 'pdf_form_filled.jpg')
     r.close()
+
 if __name__ == "__main__":
     fill_out()
-
-
-
-
-
-
-
-# # r.click(850, 705)
-# r.type(890, 705, 'Shayan')
-# r.type(890, 750, 'Kousha')
-# r.type(890, 795, '661 University Ave')
-# r.type(890, 820, 'Suite 710')
-# r.type(850, 845, 'M5G 1M1')
-# r.type(1000, 845, 'toronto')
-# r.type(850, 890, 'Canada')
-# r.type(850, 935, 'w')
-# r.dclick(850, 980)
-# r.keyboard('[backspace]')
-# r.type(850, 980, '170')
-# r.click(775, 1025)
-# r.keyboard('[down][down][down]')
-# r.click(892, 960)
-# r.type(892, 1005, 'b')
