@@ -1,4 +1,5 @@
 # https://github.com/puzzledqs/BBox-Label-Tool
+# This file is from https://github.com/cfotache/pytorch_custom_yolo_training
 from __future__ import division
 from tkinter import *
 import tkinter.messagebox
